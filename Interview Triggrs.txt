@@ -1,0 +1,167 @@
+1) public class AsteriskPattern {
+    public static void main(String[] args) {
+        for (Integer i = 1; i <= 5; i++) {
+            for (Integer j = 1; j <= i; j++) {
+                System.debug('*');
+            }
+            System.debug('\n');
+        }
+    }
+}
+out put
+*
+**
+***
+****
+*****
+
+
+2.
+public class AsteriskPattern {
+    public static void main(String[] args) {
+        Integer numRows = 5;
+        
+        for (Integer i = 1; i <= numRows; i++) {
+            for (Integer j = 1; j < i; j++) {
+                System.debug(' ');
+            }
+            for (Integer k = 1; k <= 5; k++) {
+                System.debug('*');
+            }
+            System.debug('\n');
+        }
+    }
+}
+
+
+
+*****
+ *****
+  *****
+   *****
+    *****
+
+1) trigger UpdateAmountOnClosedWon on Opportunity (before update) {
+    // List to hold Opportunities that need to be updated
+    List<Opportunity> opportunitiesToUpdate = new List<Opportunity>();
+
+    for (Opportunity opp : Trigger.new) {
+        // Check if the StageName has changed to 'Closed Won' and Amount is not already 100
+        if (opp.StageName == 'Closed Won' && opp.Amount != 100) {
+            opp.Amount = 100;
+            opportunitiesToUpdate.add(opp);
+        }
+    }
+
+    // Update the Opportunities with new Amount value
+    update opportunitiesToUpdate;
+}
+      
+2)Create No of Contacts On Fields Counts__c on Account object
+According to that no create Related Contacts for that Account: 
+	
+	
+	trigger AccountTrigger on Account(After Insert){
+	List<Contact> conList = new List<Contact>();
+	for(Account objAcc : trigger.new){
+		
+		for(Integer i=0; i<=objAcc.Count__c; i++){
+		Contact objCon =new Contact(FirstName='test'+i, LastName = 'Test');
+			objCon.AccountID=objAcc.ID;
+			conList.add(objCon);
+		}
+	if(!conList.isEmpty())
+	Database.Insert(conList ,false);
+	}
+	}
+================================================================
+
+3) Create No of Contacts On Fields Counts__c on Account object
+	
+trigger AccountTrigger on Account(after Insert){
+List<Contact> conList = new List<Contact>();
+for(Account objAcc : trigger.new){
+	for(Integer i=0;i<=objAcc.Count__c ; i++){
+	Contact objCon  = new Contact(FirstName='test'+i,LastName='test');
+	objCon.AccountID = objAcc.ID; 
+conList .add(objCon);
+}
+if(!ConList.isEmpty())
+Database.Insert(conList,false);
+}
+}
+
+=========================
+
+4) Create No of Contacts On Fields Counts__c on Account object
+
+trigger AccountTrigger on Account(after Insert){
+List<Contact> conList= new List<Contact>();
+for(Account objAcc : triger.new){
+
+	for(integer i=1,i<=objAcc.Count;i++){
+	Contact objCon = new Contact(FirstName='Test'+i,LastName='test');
+	conList.add(objCon);
+	objCon.AccountID=objAcc.ID;
+}
+if(!conList.isEmpty())
+Database.insert(conList,false);
+}
+}
+==================================================
+trigger ApplicantTrigger2 on Applicant__c (before insert,before update) {
+    for(Applicant__c objApp : trigger.new){
+        if(objApp.Gender_c =='Male' && !objApp.First_Name_c.startsWith('Mr.')){
+            objApp.First_Name_c = 'Mr.'+objApp.First_Name_c.removeStartIgnoreCase('Ms.');
+        }
+        else{
+            if(objApp.Gender_c =='Female' && !objApp.First_Name_c.startsWith('Ms')){
+                objApp.First_Name_c = 'Ms.'+objApp.First_Name_c.removeStartIgnoreCase('Mr.');
+            }
+            else{
+                if(objApp.Gender__c =='Transgender')
+                        objApp.Gender__c.addError('Transgender is currently not allowed.');
+                
+            }
+        }
+    } 
+
+}
+
+
+====================
+FOr Information : 
+
+trigger AccountTrigger on Account(before Update){
+	
+	ID profileID = UserInfo.getProfileID();
+	
+	string profileName =[Select ID, Name from Profile where ID IN :profileID].Name;
+	system.debug('profile Name'+profileName);
+	
+	for(Account objAcc : trigger.new){
+		if(profileName =='Agent'){
+		objAcc.addError('Agent cannot update Record');
+	}
+	}
+}
+
+
+trigger AccountTrigger on Account(before update){
+	
+	ID profileID = UserInfo.GetPrfileID();
+	
+	String profileInfoName =[Select ID, Name from Profile Where ID IN : profileID].Name;
+	
+	System.debug(profileInfoName);
+
+	for(Account objAcc : trigger.new){
+	IF(ProfielName=='Agent'){
+	objAcc.addError('Agent cannot update Record'');
+	}
+}
+}
+
+
+
+

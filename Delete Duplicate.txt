@@ -1,0 +1,59 @@
+Deplete Duplicate : 
+1] Insert a New Account. If this Account Name already exists in the Account object, then delete Existing Account Record.
+		
+		trigger accTriggr on Account (before Insert, before update, after undelete){
+			Set<string> accNameSet =new Set<string>();
+			for(Account objAcc : trigger.new){
+			if(string.isNotBlank(objAcc.Name))
+				accNameSet.add(objAcc.Name)
+			}
+			
+			Database.delete([Select Id, Name,Rating from Account where Name IN : accNameSet],false);
+		}
+	
+	trigger accountTrigger on Account (before Insert, before update, after Undelte){
+		Set<String> accNameSet = new Set<String>();
+		for(Accout objAcc : trigger.new){
+		if(String.isNotBlank(objAcc.Name))
+		accNameSet.add(objAcc.Name)
+	}	
+	Database.delete([SELECT ID, Name  from Account where Name IN : accNameSet],false);
+}
+============================
+2.Insert a New Applicant. If this Amount Name already exists in the Applicant object, then delete Existing Applicant Record.
+	
+	trigger appTrigger on Applicant(before insert, before update, after undelete){
+	SET<Decimal> appAmountSet = new SET<Decimal>();
+	for(Applicant__c objApp : trigger.new){
+		if((objApp.Amount__c) !=null)
+		appAmountSet.add(objApp.Amount__c);
+	}	
+	Database.Delete([Select ID, Name, Amount from Applicant__c WHERE Amount__c IN : appAmountSet],false);
+	}
+===================================================================
+
+	3]Insert a new Contact. If this Contact Email ID already exists in the Contact object, then delete Existing Contact Record.
+	
+	trigger contactTrigger On Contact(before insert,before update, after undelete){
+	SET<string> conEmailSet = new SET<string>();
+	for(Contcat objCon : trigger.new){
+	if(string.isNotBlank(objCon.Email))
+		conEmailSet.add(objCon.Email)
+		}
+		
+		Database.delete([Select ID, Name, Email from Contact where Email IN : conEmailSet],false);
+	}
+	=================================================
+	4] Insert a new Opportunity. If Same Amount and Stage Name Opp existing in the Database, then delete existing opp.
+	
+	triger oppDeleteTrigger on Opportunity (before insert, before update){
+		Set<Decimal> oppAmountSet = new Set<Decimal>();
+		Set<String> oppStageSet =new Set<String>();
+		for(Opportunity objOpp : trigger.new){
+		if(!string.IsBlank(objOpp.StageName) && objOpp.Amount!=null){
+			oppAmountSet.add(objOpp.Amount);
+			oppAmountSet.add(objOpp.StageName);
+		}
+		}
+	Database.delete([SELECT ID, Amount,StageName from Opportunity whrere Amount IN : oppAmountSet AND StageName IN :oppStageSet],false);
+	}

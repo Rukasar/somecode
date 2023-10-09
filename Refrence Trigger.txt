@@ -1,0 +1,39 @@
+User Story 2] Create an Account, if Industry = ‘Technology’, then Customer Priority must be “High”.
+
+If Account SLA is updated from Silver to Bronze, then only Active set to “Yes”, else Blank.
+
+If Account SLA is updated to Platinum from any value, then show Error Message, ‘You can not set SLA to Platinum’
+
+
+//Create an Account, if Industry = ‘Technology’, then Customer Priority must be “High”.
+//If Account SLA is updated from Silver to Bronze, then only Active set to “Yes”, else Blank.
+//If Account SLA is updated to Platinum from any value, then show Error Message, ‘You can not set SLA to Platinum’
+
+trigger AccountTrigger on Account (before Insert, Before Update) {
+    
+    for(Account objAcc : trigger.new){
+        if(trigger.isInsert && trigger.isBefore){
+            if(objAcc.Industry == 'Technology'){
+                objAcc.CustomerPriority__c = 'High';
+            }
+            else{
+                objAcc.CustomerPriority__c = null;
+            }
+        }
+        
+        if(trigger.isUpdate && trigger.isBefore){
+            if(trigger.oldMap.get(objAcc.Id).SLA__c =='Silver' && objAcc.SLA__c == 'Bronze'){
+                objAcc.Active__c = 'Yes';
+            }
+            else{
+                objAcc.Active__c = null;
+            }
+            
+            if(objAcc.SLA__c == 'Platinum'){
+                objAcc.addError('You can not set SLA to Platinum');
+            }
+        }
+    }
+   
+  }
+

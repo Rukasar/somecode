@@ -1,0 +1,90 @@
+Prevent Duplicate: 
+	
+1)Insert/Update an Applicant. If this Applicant Amount already exists into the Database, then PREVENT it. 
+
+trigger ApplicantTriggerDupAmtPrevent on Applicant__c (before insert, before update, after undelete) {
+     Set<Decimal> appAmountSet = new Set<Decimal>();
+    for(Applicant__c objApp : trigger.new){
+        if(objApp.Amount__c != null)
+            appAmountSet.add(objApp.Amount__c);
+    }
+    
+    Map<Decimal, Applicant__c> applicantMap = new Map<Decimal, Applicant__c>();
+    if(!appAmountSet.isEmpty()){
+        for(Applicant__c objApp : [select Id,Amount__c from Applicant__c where Amount__c IN :  appAmountSet] ){
+            applicantMap.put(objApp.Amount__c , objApp);
+        }
+    }
+    
+    if(!applicantMap.isEmpty()){
+        for(Applicant__c objApp : trigger.new){
+            if(applicantMap.containsKey(objApp.Amount__c)){
+                objApp.Amount__c.addError('The Applicant with same amount = '+objApp.Amount__c+' already exists');
+            }
+        }
+    }
+}
+===============================================
+Or : Check This
+
+trigger ApplicantTrigger on Applicant__c (before insert, before update ,after Undelete) {
+
+        Set<Decimal> appAmountSet = new Set<Decimal>();
+        for(Applicant__c objApp : trigger.new){
+            if(objApp.Amount__c !=null)
+                appAmountSet.add(objApp.Amount__c);
+        }
+    
+        //Map<Decimal,Applicant__c> appMap = new Map<Decimal,Applicant__c>([Select Id, Amount__c from Applicant__c where Amount__c IN :appAmountSet]);
+       List<Applicant__c> applicantList = [SELECT id FROM Applicant__c WHERE Amount__c In :appAmountSet];
+            for(Applicant__c objApp : applicantList){
+                
+                    
+                    objApp.Amount__c.addError(objApp.Amount__c+'Is Already Exixt');
+                
+            }
+        }
+    ====================================================================================================
+
+3)	 Prevent Duplicate Contact as per the Email Id.
+		
+		trigger contactTrigger on Contact(before insert, before update , after undelete){
+		Set<String> conSet =new Set<String>();
+		for(Contact objCon : trigger.new){
+		if(!string.isBlank(objCon.Email))	
+			conSet.add(objCon.Email);
+		}
+		Map<String,Contact> conMap = new Map<String,Contact>([Select Id, Name ,Email from Contcat where Email IN :conSet]);
+			
+			if(!conMap.isEmpty()){
+			for(Contact objCon : trigger.new){
+			if(conMap.containsKey(objCon.Email)){
+			objCon.addError('This Email isAlready Exixt');
+			}
+			}
+		}
+		}
+		=================================
+4)Prevent Applicant with same Email Id, Pan Card and Police Verification.
+		
+	trigger AppTrigger on Applicant__c (before insert, before update, after undelete) {
+    
+    Set<String> appEmailSet = new Set<String>();
+    Set<String> appPanSet = new Set<String>();
+    Set<Boolean> appPoliceSet = new Set<Boolean>();
+    
+    for(Applicant__c objApp : trigger.new){  
+           appEmailSet.add(objApp.Email_ID__c);
+            appPanSet.add(objApp.Pan_Card__c);
+            appPoliceSet.add(objApp.Verification__c);
+                
+    }
+    Map<String,Applicant__c> appMap = new Map<String,Applicant__c>([Select Id, Name, Pan_Card__c,Email_ID__c from Applicant__c where Pan_Card__c IN : appPanSet And Email_ID__c IN :appEmailSet And ]);
+    Map<Boolean,Applicant__c> policeMap = new Map<Boolean,Applicant__c>([Select Id, Verification__c from Applicant__c where Verification__c IN : appPoliceSet]);
+    for(Applicant__c objApp : trigger.new){
+        if(appMap.containsKey(objApp.Email_Id__c) && appMap.containsKey(objApp.Pan_Card__c) && policeMap .containsKey(objApp.Verification__c)){
+            
+            objApp.addError('Cant be added');
+        }
+    }
+}

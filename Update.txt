@@ -1,0 +1,122 @@
+Update:
+1] Prevent If Account Rating updated to ‘Hot’.
+	
+	trigger AccountTrigger on Account(before update){
+		
+		for(Account objAcc : trigger.new){
+		if(objAcc.Rating=='Hot'){
+		objAcc.Rating.addError('Account Rating Can not be updated to hot');
+		}
+		}
+	}
+=================================================================
+	
+	2] Prevent Account if, Rating is updated from “Warm” to “Cold”.
+	trigger accountTrigger on Account(before update){
+	for(Account objAcc : trigger.new){
+		
+		if( objAcc.Rating=='Cold' && trigger.oldMap.get(objAcc.Id).Rating=='Warm'){
+		objAcc.Rating.addError('Cant be updated from warm to hot');
+		}
+	}
+	
+	}
+	
+	trigger accountTrigger on Account(before update){
+	for(Account objAcc : trigger.new){
+	
+	if(objAcc.Rating=='Cold' && trigger.oldMap.get(objAcc.Id).Rating=='Warm'){
+	objAcc.Rating.addError('Cant be updated from warm to hot');
+	}
+	}
+	}
+	=========================================================
+	3] Show “Yahoo” in Description, if Opportunity Stage updated from Closed Lost to Closed Won. Else None.
+	
+	trigger OppTrigger on Opportunity(before update){
+	
+		for(Opportunity objOpp : trigger.new){
+			if(objOpp.StageName=='Closed Won' && trigger.oldMap.get(objOpp.Id).StageName=='Closed Lost'){
+				objOpp.Description='Yahoo';
+			}
+			else{
+				objOpp.Description='';
+			}
+			}
+}
+		
+4] Send Email to Applicant, whenever he is Eligible for Police Verification.
+
+	trigger applicantTrigger on Applicant(after insert, after update){
+	
+	for(Applicant__c objApp : trigger.new){
+	If(trigger.isInsert && trigger.isAfter){
+		if(objApp.Police_Verification__c)
+	}
+	}
+	if(trigger.isUpdate && triggr .isAfter){
+		if(objApp.Police_Verification__c && !trigger.oldMap.get(objApp.Id).Police_Verification__c){
+		if(objApp.Police_Verification__c ){
+		}
+		}
+		
+	}
+	}
+	==============================================
+	
+	4] Send an Email 
+
+	When a new Account is Created.   Account has been Created
+	When an Account is updated from “Hot” to “Cold”  Account has been updated
+	When an Account is deleted.  Account has been deleted.
+
+	trigger accTrigger on Account(afterInsert, after Update , before delete){
+		list <Messaging.SingleEmailMessage> maillist = new list <Messaging.SingleEmailMessage>();  
+		
+		if(Trigger.isInsert && trigger.isAfter){
+		for(Account objAcc : trigger.new){
+		if(!string.isBlank(objAcc.Email_Id)){
+		Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+                mail.setToAddresses(new String[] {'youremail@gmail.com'});
+                mail.setSenderDisplayName('Airtel lmt');
+                mail.setSubject('your account has been created');
+                mail.setPlainTextBody('Hi \t'+acc.Name+'\n, your account has been created ');
+                maillist.add(mail);
+		}
+		            Messaging.sendEmail(maillist,false);
+		}
+		
+		else if(trigger.isUpdate & trigger.isAfter){
+		for(Account objAcc : trigger.new){
+		if(objAcc.Rating==Cold && trigger.oldMao.get(objAcc.Id).rating=='Hot'){
+		Messaging.SingleEmailMessage mail = new Messaging.SingleEmailMessage();
+                    mail.setToAddresses(new String[] {'youremail@gmail.com'});
+                    mail.setSenderDisplayName('Airtel lmt');
+                    mail.setSubject('your account has been updated');
+                    mail.setPlainTextBody('Hi \t'+acc.Name+'\n, your account has been updated ');
+                    maillist.add(mail);
+
+
+		}
+		}
+		 Messaging.sendEmail(maillist,false);
+		}
+			else if(trigger.isdelete && trigger.isBefore){
+			for(Account acc : trigger.old){
+			
+			}
+
+		}
+		
+		
+		
+		}
+		
+	
+	Create a new Applicant Record. Applicant should be eligible for Police Verification, if Gender is “Male”.
+	
+		for(Applicant__c objApp : trigger.new){
+		
+		if(objApp_Pan_Card  !=trigger.oldMap.get(objApp.Id).Pan_card)
+		
+		}
