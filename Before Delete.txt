@@ -1,0 +1,62 @@
+Before Delete 
+1] If we delete Applicant Record and If He is eligible for Police Verification, 
+then Prevent it “Police Verification Applicant Records cannot be deleted”.
+
+triger applicantTrigger on Applicant__c(before delete){
+	for(Applicant__c objApp : trigger.old){   // will give us Old Records from Database
+		if(objApp.Police_Verification__c ==true){
+		objApp.addError('PV Record Can't Be deleated');
+		}
+	}
+}
+===============================
+2) Create an Object “Opportunity Backup”. Take Backup of Opportunity when a record gets deleted.
+	
+	trigger OpportuinityTrigger on Opportunity(before delete){
+	List<Opportunity_Backup__c> objBackList =new List<Opportunity_Backup__c>();
+	for(Opportunity objOpp : Trigger.old){
+		
+		Opportunity_Backunp__c objOppBack = new Opportunity_Backunp__c(old_Name__c= objOpp.Name, Old_Amount__c=objOpp.Amount, Old_StageName__c=objOpp.StageName);
+					objBackList.add(objOppBack);
+	}
+	if(!objBackList.isEmpty())
+		Database.Insert(objBackList,false);
+	}
+	=============================
+	3) Show Error, if user deletes an Opp record of StageName “Prospecting”. Else Take its Backup.
+		
+	 trigger oppTrigger On Oppoertuity(before delete){
+	 List<Opportunity_Backunp__c> oppBackList =new List<Opportunity_Backunp__c>();
+	 for(Opportunity objOpp : trigger.new){
+		if(objOpp.StageName=='Prospecting'){
+		objOpp.addError('Prospecting Opp can not be deleated')
+		}
+		else{
+		Opportunity_Backunp__c objBack = new Opportunity_Backunp__c(objBack.old_Name= objOpp.Name,objBack.old_StageName__c = objOpp.StageName,objBack.Old_Amount__c=objOpp.Amount );
+		oppBackList.add(objBack);
+		}
+	 }
+	 if(oppBackList.isEmpty())
+		database.Insert(oppBackList,false);
+	 }
+	================================
+	1] Take backup of APPLICANT object. Only if Applicant was eligible for Police Verification, DOB month is July or Nov and 
+		Gender is “Male” or “Female”.
+		Else prevent it.
+	
+		trigger applicantTrigger on Applicant__c (before delete){
+		List<Applicant_backup__c> appBackList = new List<Applicant_backup__c>();
+		for(Applicant__c objApp : trigger.old){
+			
+			if(objApp.Polica_Verification__c && (objAppDOB__c.Month()==7 || objAppDOB__c.Month()==11) && (objApp.Gender__c=='Male' || objApp.Gender__c=='Felmale') ){
+			
+			Applicant_Backup objAppBack = new Applicant_Backup(objAppBack.oldFirst_Name = objApp.First_Name__c  );
+			appBackList.add(objAppBack);
+ 			}
+			else{
+			objApp.addError('You cant Delete Applicnat Record');
+			}
+		} 
+		if(!appBackList.isEmpty())
+			database.insert(appBackList,false);
+		}
