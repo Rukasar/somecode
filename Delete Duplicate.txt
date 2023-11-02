@@ -57,3 +57,5 @@ Deplete Duplicate :
 		}
 	Database.delete([SELECT ID, Amount,StageName from Opportunity whrere Amount IN : oppAmountSet AND StageName IN :oppStageSet],false);
 	}
+	========================================
+	End
